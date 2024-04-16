@@ -1,17 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import VueTest from "@/views/board/VueTest"
+import MainPage from "@/views/MainPage.vue"
+import BoardList from "@/views/board/BoardList.vue"
 
 const routes = [
   {
-    path: '/board/VueTest',
-    name: 'VueTest',
-    component: VueTest
+    path: '/',
+    name: 'MainPage',
+    component: MainPage
+  },
+  {
+    path: '/board/BoardList',
+    name: 'BoardList',
+    component: BoardList
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+    history : createWebHistory(),
+    routes
+});
 
 export default router
