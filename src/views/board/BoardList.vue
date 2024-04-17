@@ -13,8 +13,8 @@
       <tr v-for="(row, id) in list" :key="id">
         <td>{{ row.id }}</td>
         <td><a v-on:click="fnView(`${row.id}`)">{{ row.title }}</a></td>
-        <td>{{ row.nick_name }}</td>
-        <td>{{ row.create_date }}</td>
+        <td>{{ row.nickName }}</td>
+        <td>{{ row.createDate }}</td>
       </tr>
       </tbody>
     </table>
@@ -37,7 +37,7 @@ export default {
     fnGetList() {
       this.requestBody = { // 데이터 전송
       }
-      this.$axios.get(this.$serverUrl + "/board/list", {
+      this.$axios.get(this.$serverUrl + "/api/board/list", {
         params: this.requestBody,
         headers: {}
       }).then((res) => {
@@ -47,7 +47,14 @@ export default {
           alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
         }
       })
-    }
+    },
+    fnView(id) {
+      this.requestBody.id = id
+      this.$router.push({
+        path: './BoardDetail',
+        query: this.requestBody
+      })
+    },
   }
 }
 </script>
