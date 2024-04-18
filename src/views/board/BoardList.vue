@@ -1,5 +1,6 @@
 <template>
   <div class="board-list">
+    <button type="button" class="w3-button w3-round w3-blue-gray" v-on:click="fnWrite">등록</button>
     <table class="">
       <thead>
       <tr>
