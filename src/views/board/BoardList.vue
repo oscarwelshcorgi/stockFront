@@ -29,6 +29,7 @@ export default {
       requestBody: {}, //리스트 페이지 데이터전송
       list: {}, //리스트 데이터
       no: '', //게시판 숫자처리
+      memberInfo: null
     }
   },
   mounted() {
@@ -54,6 +55,11 @@ export default {
       this.$router.push({
         path: './BoardDetail',
         query: this.requestBody
+      })
+    },
+    fnWrite() {
+      this.$router.push({
+        path: './boardWrite'
       })
     },
   }

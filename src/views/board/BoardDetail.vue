@@ -50,6 +50,7 @@ export default {
         }
       })
     },
+
     fnList() {
       delete this.requestBody.id
       this.$router.push({
@@ -57,6 +58,24 @@ export default {
         query: this.requestBody
       })
     },
+
+    fnUpdate() {
+      this.$router.push({
+        path: './boardWrite',
+        query: this.requestBody
+      })
+    },
+    fnDelete() {
+      if (!confirm("삭제하시겠습니까?")) return
+
+      this.$axios.delete(this.$serverUrl + '/api/board/delete/' + this.id, {})
+          .then(() => {
+            alert('삭제되었습니다.')
+            this.fnList();
+          }).catch((err) => {
+        console.log(err);
+      })
+    }
   }
 }
 </script>
