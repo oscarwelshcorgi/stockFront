@@ -6,6 +6,7 @@
       <button type="button" v-on:click="fnList">목록</button>
     </div>
     <div class="">
+      <span>번호 : {{ id }}</span>
       <h3>제목 : {{ title }}</h3>
       <span>작성자 이름: </span><strong class="w3-large">{{ nickName }}</strong>
       <div>

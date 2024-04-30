@@ -53,7 +53,7 @@ export default {
     fnView(id) {
       this.requestBody.id = id
       this.$router.push({
-        path: './BoardDetail',
+        path: './boardDetail',
         query: this.requestBody
       })
     },

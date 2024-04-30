@@ -12,7 +12,7 @@
         <h1>회원 정보</h1>
         <img :src="memberInfo.picture" />
         <p>Email : {{ memberInfo.email }}</p>
-        <p>Name : {{ memberInfo.name }}</p>
+        <p>nickName: {{ memberInfo.nickName }}</p>
         <button @click="redirectToGoogleLogout">구글 로그아웃</button>
     </div>
 </div>
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { convertKeysToCamelCase } from '@/vuex/convertToCamel';
+
 export default {
   data() {
     return {
@@ -37,7 +39,9 @@ export default {
     this.$axios.get(apiUrl, { withCredentials: true }) // withCredentials 옵션을 통해 쿠키를 전달
       .then(response => {
         // 성공적으로 데이터를 받아왔을 때 처리
-        this.memberInfo = response.data;
+        const transformedData = convertKeysToCamelCase(response.data);
+        this.memberInfo = transformedData;
+        console.log(transformedData);
       })
       .catch(error => {
         // 에러 발생 시 처리

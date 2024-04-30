@@ -1,106 +1,102 @@
 <template>
-  <div class="board-detail">
-    <div class="common-buttons">
-      <button type="button" class="w3-button w3-round w3-blue-gray" v-on:click="fnSave">저장</button>&nbsp;
-      <button type="button" class="w3-button w3-round w3-gray" v-on:click="fnList">목록</button>
+  <div>
+    <h1>회원 정보</h1>
+    <div v-if="memberInfo">
+      <p>Email: {{ memberInfo.email }}</p>
+      <p>nickName: {{ memberInfo.nickName }}</p>
     </div>
-    <div class="board-contents">
-      <input type="text" v-model="title" class="w3-input w3-border" placeholder="제목을 입력해주세요.">
-      <input type="text" v-model="nickName" class="w3-input w3-border" placeholder="작성자를 입력해주세요." v-if="id === undefined">
+    <div v-else>
+      <p>회원 정보를 불러오는 중입니다...</p>
     </div>
-    <div class="board-contents">
-      <textarea id="" cols="30" rows="10" v-model="content" class="w3-input w3-border" style="resize: none;">
-      </textarea>
-    </div>
-    <div class="common-buttons">
-      <button type="button" class="w3-button w3-round w3-blue-gray" v-on:click="fnSave">저장</button>&nbsp;
-      <button type="button" class="w3-button w3-round w3-gray" v-on:click="fnList">목록</button>
-    </div>
+
+    <h1>게시글 작성</h1>
+    <form @submit.prevent="submitPost">
+      <label for="title">제목:</label>
+      <input type="text" id="title" v-model="post.title" required placeholder="제목을 입력해주세요.">
+      <label for="content">내용:</label>
+      <textarea id="content" v-model="post.content" required placeholder="내용을 입력해주세요." rows="5"></textarea>
+      <button type="submit">{{ post.id ? '게시글 수정' : '게시글 작성' }}</button>
+    </form>
   </div>
 </template>
 
 <script>
 export default {
-  data() { //변수생성
+  data() {
     return {
-        member: null,
       requestBody: this.$route.query,
       id: this.$route.query.id,
-
-      title: '',
-      nickName: '',
-      content: '',
-      createDate: ''
+      post: {
+        id: null,
+        title: '',
+        content: ''
+      }
+    };
+  },
+  computed: {
+    memberInfo() {
+      return this.$store.getters.getMemberInfo;
     }
   },
-  mounted() {
-    this.fnGetView()
+  created() {
+    this.fetchMemberInfo();
+    this.fnEditPost(); // 컴포넌트 생성 시 게시글 수정 모드로 진입
   },
   methods: {
-    fnGetView() {
-      if (this.id !== undefined) {
-        this.$axios.get(this.$serverUrl + '/board/' + this.id, {
-          params: this.requestBody
-        }).then((res) => {
-          this.title = res.data.title
-          this.nickName = res.data.nickName
-          this.contents = res.data.content
-          this.createDate = res.data.createDate
-        }).catch((err) => {
-          console.log(err)
+    fetchMemberInfo() {
+      this.$store.dispatch('fetchMemberInfo')
+        .then(() => {
+          console.log('회원 정보를 성공적으로 가져왔습니다.');
         })
-      }
+        .catch(error => {
+          console.error('회원 정보를 가져오는 중 오류 발생:', error);
+        });
     },
-    fnList() {
-      delete this.requestBody.id
-      this.$router.push({
-        path: './boardList',
-        query: this.requestBody
-      })
-    },
-    fnView(id) {
-      this.requestBody.id = id
-      this.$router.push({
-        path: './boardDetail',
-        query: this.requestBody
-      })
-    },
-    fnSave() {
-      let apiUrl = this.$serverUrl + '/api/board/create'
-      this.form = {
-        "id": this.id,
-        "title": this.title,
-        "content": this.content,
-        "nickName": this.nickName,
+    submitPost() {
+      if (!this.memberInfo) {
+        console.error('회원 정보를 가져올 수 없습니다.');
+        return;
       }
 
-      if (this.id === undefined) {
-        //INSERT
-        this.$axios.post(apiUrl, this.form)
-        .then((res) => {
-          alert('글이 저장되었습니다.')
-          this.fnView(res.data.id)
-        }).catch((err) => {
-          if (err.message.indexOf('Network Error') > -1) {
-            alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
+      this.post.nick_name = this.memberInfo.nickName;
+      this.post.email = this.memberInfo.email;
+
+      const apiUrl = `${this.$serverUrl}/api/board/${this.post.id ? 'update' : 'create'}`;
+      const method = this.post.id ? 'patch' : 'post';
+
+      this.$axios[method](apiUrl, this.post)
+        .then(response => {
+          const postId = response.data.id;
+          alert('게시글이 저장되었습니다.');
+
+          if (postId) {
+            this.$router.push({
+              path: '/board/boardDetail',
+              query: this.requestBody
+            }); // 저장된 게시글 상세 페이지로 이동
+          } else {
+            console.error('저장된 게시글의 ID를 가져올 수 없습니다.');
           }
         })
-      } else {
-        //UPDATE
-        this.$axios.patch(apiUrl, this.form)
-        .then((res) => {
-          alert('글이 저장되었습니다.')
-          this.fnView(res.data.id)
-        }).catch((err) => {
-          if (err.message.indexOf('Network Error') > -1) {
-            alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
-          }
-        })
-      }
+        .catch(error => {
+          console.error('게시글 저장 실패:', error);
+          alert('게시글 저장 중 오류가 발생했습니다.');
+        });
     },
+    fnEditPost() {
+      if (this.id) {
+        const apiUrl = `${this.$serverUrl}/api/board/detail/${this.id}`;
+
+        this.$axios.get(apiUrl)
+          .then(response => {
+            const { id, title, content } = response.data;
+            this.post = { id, title, content };
+          })
+          .catch(error => {
+            console.error('게시글 정보를 가져오는 중 오류 발생:', error);
+          });
+      }
+    }
   }
-}
+};
 </script>
-<style scoped>
-
-</style>
