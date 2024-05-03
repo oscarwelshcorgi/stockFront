@@ -41,6 +41,7 @@ export default {
       this.$axios.get(this.$serverUrl + '/api/board/detail/' + this.id, {
         params: this.requestBody
       }).then((res) => {
+        this.id = res.data.id
         this.title = res.data.title
         this.nickName = res.data.nickName
         this.content = res.data.content

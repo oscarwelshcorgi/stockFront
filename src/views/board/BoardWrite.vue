@@ -40,7 +40,7 @@ export default {
   },
   created() {
     this.fetchMemberInfo();
-    this.fnEditPost(); // 컴포넌트 생성 시 게시글 수정 모드로 진입
+    this.fnEditPost(); // 컴포넌트 생성 시 게시글 수정 모드로 진입. id 가져와서 해당 게시글 데이터 출력
   },
   methods: {
     fetchMemberInfo() {
