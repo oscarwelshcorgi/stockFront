@@ -1,58 +1,60 @@
 <template>
-  <div class="board-list">
-    <button type="button" class="w3-button w3-round w3-blue-gray" v-on:click="fnWrite">등록</button>
-    <table class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <button type="button" class="btn btn-primary mb-3" @click="fnWrite">등록</button>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+          <select class="form-select" v-model="searchKey">
+            <option value="">- 선택 -</option>
+            <option value="author">작성자</option>
+            <option value="title">제목</option>
+            <option value="contents">내용</option>
+          </select>
+          <input type="text" class="form-control" v-model="searchValue" @keyup.enter="fnPage()">
+          <button class="btn btn-outline-secondary" type="button" @click="fnPage()">검색</button>
+        </div>
+      </div>
+    </div>
+    <table class="table">
       <thead>
-      <tr>
-        <th>No</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>등록일시</th>
-      </tr>
+        <tr>
+          <th scope="col">No</th>
+          <th scope="col">제목</th>
+          <th scope="col">작성자</th>
+          <th scope="col">등록일시</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="(row, id) in list" :key="id">
-        <td>{{ row.id }}</td>
-        <td><a v-on:click="fnView(`${row.id}`)">{{ row.title }}</a></td>
-        <td>{{ row.nickName }}</td>
-        <td>{{ row.createDate }}</td>
-      </tr>
+        <tr v-for="(row, id) in list" :key="id">
+          <td>{{ row.id }}</td>
+          <td><a @click="fnView(row.id)" style="cursor: pointer;">{{ row.title }}</a></td>
+          <td>{{ row.nickName }}</td>
+          <td>{{ row.createDate }}</td>
+        </tr>
       </tbody>
     </table>
 
-    <div class="pagination w3-bar w3-padding-16 w3-small" v-if="paging.totalListCnt > 0">
-      <span class="pg">
-      <a href="javascript:;" @click="fnPage(1)" class="first w3-button w3-border">&lt;&lt;</a>
-      <a href="javascript:;" v-if="paging.startPage > 10" @click="fnPage(`${paging.startPage-1}`)"
-         class="prev w3-button w3-border">&lt;</a>
-      <template v-for=" (n,index) in paginavigation()">
-          <template v-if="paging.page==n">
-              <strong class="w3-button w3-border w3-green" :key="index">{{ n }}</strong>
-          </template>
-          <template v-else>
-              <a class="w3-button w3-border" href="javascript:;" @click="fnPage(`${n}`)" :key="index">{{ n }}</a>
-          </template>
-      </template>
-      <a href="javascript:;" v-if="paging.totalListCnt > paging.endPage"
-         @click="fnPage(`${paging.endPage+1}`)" class="next w3-button w3-border">&gt;</a>
-      <a href="javascript:;" @click="fnPage(`${paging.totalListCnt}`)" class="last w3-button w3-border">&gt;&gt;</a>
-      </span>
+    <div class="pagination d-flex justify-content-center" v-if="paging.totalListCnt > 0">
+      <ul class="pagination">
+        <li class="page-item" :class="{ disabled: paging.page === 1 }">
+          <a class="page-link" href="#" @click.prevent="fnPage(1)">처음</a>
+        </li>
+        <li class="page-item" :class="{ disabled: paging.page === 1 }">
+          <a class="page-link" href="#" @click.prevent="fnPage(paging.page - 1)">이전</a>
+        </li>
+        <li class="page-item" v-for="n in paginavigation()" :key="n" :class="{ active: paging.page === n }">
+          <a class="page-link" href="#" @click.prevent="fnPage(n)">{{ n }}</a>
+        </li>
+        <li class="page-item" :class="{ disabled: paging.page === paging.totalPage }">
+          <a class="page-link" href="#" @click.prevent="fnPage(paging.page + 1)">다음</a>
+        </li>
+        <li class="page-item" :class="{ disabled: paging.page === paging.totalPage }">
+          <a class="page-link" href="#" @click.prevent="fnPage(paging.totalPage)">마지막</a>
+        </li>
+      </ul>
     </div>
-
-
-  <div>
-    <select v-model="searchKey">
-      <option value="">- 선택 -</option>
-      <option value="author">작성자</option>
-      <option value="title">제목</option>
-      <option value="contents">내용</option>
-    </select>
-    &nbsp;
-    <input type="text" v-model="searchValue" @keyup.enter="fnPage()">
-    &nbsp;
-    <button @click="fnPage()">검색</button>
-  </div>
-
   </div>
 </template>
 
