@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <button type="button" class="btn btn-primary mb-3" @click="fnWrite">등록</button>
+        <button type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">등록</button>
       </div>
       <div class="col-md-6">
         <div class="input-group mb-3">

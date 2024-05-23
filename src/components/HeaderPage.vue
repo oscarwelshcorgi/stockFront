@@ -35,28 +35,16 @@
 </template>
 
 <script>
-import { convertKeysToCamelCase } from '@/vuex/convertToCamel';
-
 export default {
-  data() {
-    return {
-      memberInfo: null
-    };
-  },
   mounted() {
-    // 세션 정보를 가져오는 API 엔드포인트 설정
-    const apiUrl = 'http://localhost:8080/api/memberInfo';
-
-    // Axios를 사용하여 세션 정보 요청
-    this.$axios.get(apiUrl, { withCredentials: true }) // withCredentials 옵션을 통해 쿠키를 전달
-      .then(response => {
-        // 성공적으로 데이터를 받아왔을 때 처리
-        const transformedData = convertKeysToCamelCase(response.data);
-        this.memberInfo = transformedData;
-        console.log(transformedData);
+    // Vuex 스토어에서 세션 정보를 가져오는 액션 호출
+    this.$store.dispatch('fetchMemberInfo')
+      .then(() => {
+        // 세션 정보를 성공적으로 가져왔을 때 처리
+        console.log('Member Info:', this.$store.getters.getMemberInfo);
       })
       .catch(error => {
-        // 에러 발생 시 처리
+        // 세션 정보를 가져오는 도중 에러가 발생했을 때 처리
         console.error('Failed to fetch member info:', error);
       });
   },
@@ -67,6 +55,12 @@ export default {
     redirectToGoogleLogout() {
       window.location.href = 'http://localhost:8080/logout';
     },
+  },
+  computed: {
+    // Vuex 스토어에서 세션 정보를 가져와 사용하는 computed 속성
+    memberInfo() {
+      return this.$store.getters.getMemberInfo;
+    }
   }
 };
 </script>

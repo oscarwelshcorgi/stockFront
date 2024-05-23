@@ -1,27 +1,24 @@
 <template>
-  <div>
-    <h1>회원 정보</h1>
-    <div v-if="memberInfo">
-      <p>Email: {{ memberInfo.email }}</p>
-      <p>nickName: {{ memberInfo.nickName }}</p>
-    </div>
-    <div v-else>
-      <p>회원 정보를 불러오는 중입니다...</p>
-    </div>
+  <div class="container mt-5">
+    <form @submit.prevent="submitPost" class="mt-3">
+      <div class="form-group">
+        <input type="text" id="title" v-model="post.title" required class="form-control" placeholder="제목을 입력해주세요.">
+      </div>
 
-    <h1>게시글 작성</h1>
-    <form @submit.prevent="submitPost">
-      <label for="title">제목:</label>
-      <input type="text" id="title" v-model="post.title" required placeholder="제목을 입력해주세요.">
-      <label for="content">내용:</label>
-      <textarea id="content" v-model="post.content" required placeholder="내용을 입력해주세요." rows="5"></textarea>
-      <button type="submit">{{ post.id ? '게시글 수정' : '게시글 작성' }}</button>
+      <!-- content 작성 -->
+      <div ref="editor" class="quill-editor"></div>
+
+      <button type="submit" class="btn btn-primary">{{ post.id ? '게시글 수정' : '게시글 작성' }}</button>
     </form>
   </div>
 </template>
 
 <script>
+
+import Quill from 'quill'; // Quill 라이브러리 임포트
+
 export default {
+
   data() {
     return {
       requestBody: this.$route.query,
@@ -42,6 +39,23 @@ export default {
     this.fetchMemberInfo();
     this.fnEditPost(); // 컴포넌트 생성 시 게시글 수정 모드로 진입. id 가져와서 해당 게시글 데이터 출력
   },
+
+  mounted() {
+    // Quill 에디터 초기화
+    this.quill = new Quill(this.$refs.editor, {
+      theme: 'snow',
+      placeholder: '내용을 입력해주세요.'
+    });
+    // Quill 에디터가 정상적으로 작동하지 않으면 메시지 출력
+    if (!this.quill) {
+      console.error("Quill editor initialization failed.");
+    }
+    // Quill 에디터의 내용을 Vue 데이터와 양방향 바인딩
+    this.quill.on('text-change', () => {
+      this.post.content = this.quill.root.innerHTML;
+    });
+  },
+
   methods: {
     fetchMemberInfo() {
       this.$store.dispatch('fetchMemberInfo')
