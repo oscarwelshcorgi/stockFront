@@ -8,9 +8,9 @@
         <div class="input-group mb-3">
           <select class="form-select" v-model="searchKey">
             <option value="">- 선택 -</option>
-            <option value="author">작성자</option>
+            <option value="nickName">작성자</option>
             <option value="title">제목</option>
-            <option value="contents">내용</option>
+            <option value="content">내용</option>
           </select>
           <input type="text" class="form-control" v-model="searchValue" @keyup.enter="fnPage()">
           <button class="btn btn-outline-secondary" type="button" @click="fnPage()">검색</button>

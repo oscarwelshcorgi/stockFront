@@ -43,3 +43,16 @@ const store = createStore({
 });
 
 export default store;
+
+// Vue Router를 이용한 페이지 이동 로직을 추가
+import router from '@/router'; // Vue Router 인스턴스를 가져옴
+
+store.watch(
+  (state, getters) => getters.getMemberInfo,
+  (newMemberInfo) => {
+    if (newMemberInfo && newMemberInfo.checkNickName) {
+      // checkNickName이 true이면 닉네임 설정 페이지로 이동
+      router.push('/etc/NickNameSetup');
+    }
+  }
+);

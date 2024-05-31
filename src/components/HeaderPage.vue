@@ -24,7 +24,7 @@
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
             <li><a class="dropdown-item" href="#">Email : {{ memberInfo.email }}</a></li>
-            <li><a class="dropdown-item" href="#">nickName: {{ memberInfo.nickName }}s</a></li>
+            <li><a class="dropdown-item" href="#">nickName: {{ memberInfo.nickName }}</a></li>
             <li><a class="dropdown-item" href="#">내정보</a></li>
             <li><a class="dropdown-item" @click="redirectToGoogleLogout">로그아웃</a></li>
           </ul>
