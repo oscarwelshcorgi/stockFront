@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <button type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">등록</button>
+        <button v-if="hasMemberInfo" type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">등록</button>
       </div>
       <div class="col-md-6">
         <div class="input-group mb-3">
@@ -24,6 +24,7 @@
           <th scope="col">제목</th>
           <th scope="col">작성자</th>
           <th scope="col">등록일시</th>
+          <th scope="col">조회수</th>
         </tr>
       </thead>
       <tbody>
@@ -32,6 +33,7 @@
           <td><a @click="fnView(row.id)" style="cursor: pointer;">{{ row.title }}</a></td>
           <td>{{ row.nickName }}</td>
           <td>{{ row.createDate }}</td>
+          <td>{{ row.viewCount }}</td>
         </tr>
       </tbody>
     </table>
@@ -47,11 +49,11 @@
         <li class="page-item" v-for="n in paginavigation()" :key="n" :class="{ active: paging.page === n }">
           <a class="page-link" href="#" @click.prevent="fnPage(n)">{{ n }}</a>
         </li>
-        <li class="page-item" :class="{ disabled: paging.page === paging.totalPage }">
+        <li class="page-item" :class="{ disabled: paging.page === paging.totalPageCnt }">
           <a class="page-link" href="#" @click.prevent="fnPage(paging.page + 1)">다음</a>
         </li>
-        <li class="page-item" :class="{ disabled: paging.page === paging.totalPage }">
-          <a class="page-link" href="#" @click.prevent="fnPage(paging.totalPage)">마지막</a>
+        <li class="page-item" :class="{ disabled: paging.page === paging.totalPageCnt }">
+          <a class="page-link" href="#" @click.prevent="fnPage(paging.totalPageCnt)">마지막</a>
         </li>
       </ul>
     </div>
@@ -65,7 +67,6 @@ export default {
       requestBody: {}, //리스트 페이지 데이터전송
       list: {}, //리스트 데이터
       no: '', //게시판 숫자처리
-      memberInfo: null,
 
       paging: {
         block: 0,
@@ -80,8 +81,8 @@ export default {
         totalListCnt: 0,
         totalPageCnt: 0,
       }, //페이징 데이터
-      page: this.$route.query.page ? this.$route.query.page : 1,
-      size: this.$route.query.size ? this.$route.query.size : 10,
+      page: this.$route.query.page ? parseInt(this.$route.query.page) : 1,
+      size: this.$route.query.size ? parseInt(this.$route.query.size) : 10,
       searchKey: this.$route.query.sk ? this.$route.query.sk : '',
       searchValue: this.$route.query.sv ? this.$route.query.sv : '',
       paginavigation: function () { //페이징 처리 for문 커스텀
@@ -96,6 +97,18 @@ export default {
   mounted() {
     this.fnGetList()
   },
+
+  computed: {
+    // Vuex 스토어에서 세션 정보를 가져오는 computed 속성
+    memberInfo() {
+      return this.$store.getters.getMemberInfo;
+    },
+    // 세션 정보가 있는지 확인하는 computed 속성
+    hasMemberInfo() {
+      return !!this.memberInfo;
+    }
+  },
+
   methods: {
     fnGetList() {
       this.requestBody = { // 데이터 전송
@@ -108,6 +121,7 @@ export default {
         params: this.requestBody,
         headers: {}
       }).then((res) => {
+      console.log(res.data); // 데이터 구조 확인
         this.list = res.data  //서버에서 데이터를 목록으로 보내므로 바로 할당하여 사용할 수 있다.
 
         if (res.data.resultCode === "OK") {
@@ -118,9 +132,9 @@ export default {
 
       }).catch((err) => {
         if (err.message.indexOf('Network Error') > -1) {
-          alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
+          alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.');
         }
-      })
+      });
     },
     fnView(id) {
       this.requestBody.id = id

@@ -17,7 +17,7 @@
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <div class="fw-bold fs-4">{{ title }}</div>
-            <div class="fs-5"><strong>작성자: {{ nickName }}, 작성일: {{ createDate }}</strong></div>
+            <div class="fs-5"><strong>작성자: {{ nickName }}, 작성일: {{ createDate }}, 조회수: {{ viewCount }}</strong></div>
           </div>
           <div class="card-body">
             <div ref="editor" class="quill-viewer" v-html="content" style="margin-top: 20px; margin-bottom: 20px;"></div>
@@ -41,7 +41,8 @@ export default {
       nickName: '',
       content: '',
       createDate: '',
-      email: ''
+      email: '',
+      viewCount: ''
     }
   },
   mounted() {
@@ -89,6 +90,7 @@ export default {
         this.content = res.data.content
         this.createDate = res.data.createDate
         this.email = res.data.email
+        this.viewCount = res.data.viewCount
       }).catch((err) => {
         if (err.message.indexOf('Network Error') > -1) {
           alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
