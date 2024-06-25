@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+  <slot name="search">
     <div class="row">
       <div class="col-md-6">
         <button v-if="hasMemberInfo" type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">등록</button>
@@ -17,6 +18,8 @@
         </div>
       </div>
     </div>
+    </slot>
+
     <table class="table">
       <thead>
         <tr>
@@ -28,9 +31,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, id) in list" :key="id">
+        <tr v-for="(row, id) in boardList" :key="id">
           <td>{{ row.id }}</td>
-          <td><a @click="fnView(row.id)" style="cursor: pointer;">{{ row.title }}</a></td>
+          <td><a @click="onPostClicked(row)" style="cursor: pointer;">{{ row.title }}</a></td>
           <td>{{ row.nickName }}</td>
           <td>{{ row.createDate }}</td>
           <td>{{ row.viewCount }}</td>
@@ -62,11 +65,18 @@
 
 <script>
 export default {
+  props: {
+    list: {
+      type: Array,
+      required: true
+    }
+  },
   data() { //변수생성
     return {
       requestBody: {}, //리스트 페이지 데이터전송
-      list: {}, //리스트 데이터
+      //list: {}, //리스트 데이터
       no: '', //게시판 숫자처리
+      boardList: [],
 
       paging: {
         block: 0,
@@ -85,14 +95,7 @@ export default {
       size: this.$route.query.size ? parseInt(this.$route.query.size) : 10,
       searchKey: this.$route.query.sk ? this.$route.query.sk : '',
       searchValue: this.$route.query.sv ? this.$route.query.sv : '',
-      paginavigation: function () { //페이징 처리 for문 커스텀
-        let pageNumber = [] //;
-        let startPage = this.paging.startPage;
-        let endPage = this.paging.endPage;
-        for (let i = startPage; i <= endPage; i++) pageNumber.push(i);
-        return pageNumber;
-      }
-    }
+    };
   },
   mounted() {
     this.fnGetList()
@@ -122,12 +125,11 @@ export default {
         headers: {}
       }).then((res) => {
       console.log(res.data); // 데이터 구조 확인
-        this.list = res.data  //서버에서 데이터를 목록으로 보내므로 바로 할당하여 사용할 수 있다.
 
         if (res.data.resultCode === "OK") {
-          this.list = res.data.data
-          this.paging = res.data.pagination
-          this.no = this.paging.totalListCnt - ((this.paging.page - 1) * this.paging.pageSize)
+          this.boardList = res.data.data; // boardList에 데이터 할당
+          this.paging = res.data.pagination;
+          this.no = this.paging.totalListCnt - ((this.paging.page - 1) * this.paging.pageSize);
         }
 
       }).catch((err) => {
@@ -152,8 +154,27 @@ export default {
       if (this.page !== n) {
         this.page = n
       }
-
       this.fnGetList()
+    },
+
+    paginavigation() { // 페이징 처리 함수
+      const pageNumber = [];
+      const startPage = this.paging.startPage;
+      const endPage = this.paging.endPage;
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumber.push(i);
+      }
+      return pageNumber;
+    },
+
+    onPostClicked(row) {
+      this.$emit('postClicked', row); // 게시글 제목 클릭 이벤트 발생. row 데이터 BoardDetail 화면으로 보내기.
+      // 게시물 제목 클릭 시 상세 페이지로 이동
+      this.requestBody.id = row.id
+      this.$router.push({
+        path: './boardDetail',
+        query: this.requestBody
+      });
     }
   }
 }

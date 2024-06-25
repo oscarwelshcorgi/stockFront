@@ -2,11 +2,11 @@
   <div class="container mt-5">
     <form @submit.prevent="submitPost" class="mt-3">
       <div class="form-group">
-        <input type="text" id="title" v-model="post.title" required class="form-control" placeholder="제목을 입력해주세요.">
+        <input type="text" id="title" v-model="post.title" required class="form-control" style="font-size: 30px; font-weight: bold;" placeholder="제목을 입력해주세요.">
       </div>
 
       <!-- content 작성 -->
-      <div ref="editor" class="quill-editor"></div>
+      <div ref="editor" id="content" required class="quill-editor" style="font-size: 20px; margin-bottom: 130px;"></div>
 
       <button type="submit" class="btn btn-primary">{{ post.id ? '게시글 수정' : '게시글 작성' }}</button>
     </form>
@@ -44,7 +44,16 @@ export default {
     // Quill 에디터 초기화
     this.quill = new Quill(this.$refs.editor, {
       theme: 'snow',
-      placeholder: '내용을 입력해주세요.'
+      placeholder: '내용을 입력해주세요.',
+      modules: {
+        toolbar: [
+          // 툴바 설정은 필요에 따라 추가 설정 가능
+          [{ 'size': ['large', 'huge'] }], // 폰트 크기 조절 옵션 추가
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          ['link'],
+        ],
+      },
     });
     // Quill 에디터가 정상적으로 작동하지 않으면 메시지 출력
     if (!this.quill) {
@@ -105,6 +114,11 @@ export default {
           .then(response => {
             const { id, title, content } = response.data;
             this.post = { id, title, content };
+
+            // Quill 에디터의 내용도 초기화된 데이터로 설정(수정 시 content 가져오기)
+            if (this.quill) {
+              this.quill.root.innerHTML = this.post.content;
+            }
           })
           .catch(error => {
             console.error('게시글 정보를 가져오는 중 오류 발생:', error);
@@ -114,3 +128,16 @@ export default {
   }
 };
 </script>
+
+<style>
+img {
+    max-width: 90%;
+    height: auto;
+    object-fit: cover;
+}
+video {
+    max-width: 90%;
+    height: auto;
+    object-fit: cover;
+}
+</style>
