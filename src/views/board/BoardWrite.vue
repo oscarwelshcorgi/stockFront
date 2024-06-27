@@ -128,16 +128,3 @@ export default {
   }
 };
 </script>
-
-<style>
-img {
-    max-width: 90%;
-    height: auto;
-    object-fit: cover;
-}
-video {
-    max-width: 90%;
-    height: auto;
-    object-fit: cover;
-}
-</style>

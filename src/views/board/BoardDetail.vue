@@ -1,15 +1,20 @@
 <template>
   <div class="container">
-
     <div class="row">
       <div class="col-md-12">
         <!-- 세션 정보가 있고 이메일이 같은 경우에만 보이는 버튼 -->
         <div class="btn-group" role="group" aria-label="Button group">
-            <button v-if="hasMemberInfo && isCurrentUser" type="button" class="btn btn-primary" @click="fnUpdate">수정</button>
-            <button v-if="hasMemberInfo && isCurrentUser" type="button" class="btn btn-danger" @click="fnDelete">삭제</button>
-            <button type="button" class="btn btn-secondary" @click="fnList">목록</button>
+          <button v-if="hasMemberInfo && isCurrentUser" type="button" class="btn btn-primary" @click="fnUpdate">수정</button>
+          <button v-if="hasMemberInfo && isCurrentUser" type="button" class="btn btn-danger" @click="fnDelete">삭제</button>
+          <button type="button" class="btn btn-secondary" @click="fnList">목록</button>
         </div>
       </div>
+    </div>
+
+    <!-- 이전 글과 다음 글 링크 -->
+    <div v-if="previousBoardId !== null || nextBoardId !== null">
+      <router-link v-if="previousBoardId !== null" :to="'/board/boardDetail?id=' + previousBoardId" @click="onNavigationClick(previousBoardId)">이전 글</router-link>
+      <router-link v-if="nextBoardId !== null" :to="'/board/boardDetail?id=' + nextBoardId" @click="onNavigationClick(nextBoardId)">다음 글</router-link>
     </div>
 
     <div class="row mt-3">
@@ -20,7 +25,7 @@
             <div class="fs-5"><strong>작성자: {{ nickName }}, 작성일: {{ createDate }}, 조회수: {{ viewCount }}</strong></div>
           </div>
           <div class="card-body">
-            <div ref="editor" class="quill-viewer" v-html="content" style="margin-top: 20px; margin-bottom: 20px; border:0; font-size: 20px;"></div>
+            <div ref="editor" class="quill-viewer" v-html="content" style="margin-top: 20px; margin-bottom: 20px; border: 0; font-size: 20px;"></div>
           </div>
         </div>
 
@@ -31,10 +36,56 @@
             </template>
           </BoardList>
         </div>
-
       </div>
     </div>
 
+    <div>
+      <router-link :to="'/board/detail/' + previousBoardId">이전 글</router-link>
+      <router-link :to="'/board/detail/' + nextBoardId">다음 글</router-link>
+    </div>
+
+    <!--
+    <div>
+      <router-link  :to="'/board/boardDetail?id=' + previousBoardId" @postClicked="onPostClicked">이전 글</router-link>
+      <router-link  :to="'/board/boardDetail?id=' + nextBoardId">다음 글</router-link>
+    </div>
+
+    <router-link v-if="previousBoardId !== null" :to="'/board/detail/' + previousBoardId">이전 글2</router-link>
+    <router-link v-if="nextBoardId !== null" :to="'/board/detail/' + nextBoardId">다음 글2</router-link>
+    -->
+
+    <!-- 하단 메뉴 -->
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <div class="bottom_menu d-flex justify-content-between">
+          <div>
+            <image href="@/assets/stock_chart.png"/> <!-- back -->
+          </div>
+
+          <div v-if="nextBoardId !== null" @click="refreshPage">
+            <router-link :to="'../board/boardDetail?id=' + nextBoardId + '&page=' + page" style="margin-left: 25%;">
+              <image href="@/assets/stock_chart.png"/> <!-- up -->dd
+            </router-link>
+          </div>
+
+          <div v-if="previousBoardId !== null"  @click="refreshPage">
+            <router-link :to="'../board/boardDetail?id=' + previousBoardId + '&page=' + page" style="margin-left: 40%;" :key="previousBoardId">
+              <image href="@/assets/logo.png" alt="Previous"/><!-- down -->aa
+            </router-link>
+          </div>
+
+          <div>
+            <router-link to="/usr/member/myPage">
+              <img src="/img/face.png"/>
+            </router-link>
+          </div>
+
+          <div>
+            <img src="/img/setting.png" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -57,6 +108,9 @@ export default {
       email: '',
       viewCount: '',
       boardList: [], // BoardList의 게시글 리스트 데이터
+      previousBoardId: '',// 이전 글 ID
+      nextBoardId: '', // 다음 글 ID
+      page: 1,
     }
   },
   mounted() {
@@ -105,6 +159,12 @@ export default {
         this.createDate = res.data.createDate
         this.email = res.data.email
         this.viewCount = res.data.viewCount
+        this.previousBoardId = res.data.previousBoardId; // 서버에서 전달된 이전 글의 ID
+        this.nextBoardId = res.data.nextBoardId; // 서버에서 전달된 다음 글의 ID
+            console.log('Previous Board ID:', this.previousBoardId);
+            console.log('Next Board ID:', this.nextBoardId);
+            console.log('title:', this.id);
+            console.log('API 응답 데이터:', res.data); // 응답 데이터 확인
         // BoardList의 게시글 리스트 데이터 업데이트
         this.boardList = res.data.boardList;
       }).catch((err) => {
@@ -176,10 +236,82 @@ export default {
           // 조회수 증가 실패
           console.error('조회수 증가 중 오류가 발생했습니다.', err);
         });
-    }
+    },
+
+    // 이전 글 또는 다음 글 클릭 시 호출되는 메서드
+    onNavigationClick(id) {
+      this.$axios.get(this.$serverUrl + '/api/board/detail/' + id)
+        .then((res) => {
+          this.updateViewData(res.data);
+
+          // URL을 변경하여 해당 게시글로 이동
+          this.$router.push({
+            path: '/board/boardDetail?id=' + id,
+            query: { id: id }
+          });
+          this.refreshPage();
+        }).catch((err) => {
+          console.error('이전 글 또는 다음 글 조회 중 오류가 발생했습니다.', err);
+        });
+    },
+
+    // 브라우저 히스토리에서 이전 페이지로 이동
+    goBack() {
+      this.$router.go(-1);
+    },
+    // 클릭 시 페이지 리프레시
+    refreshPage() {
+      window.location.reload();
+    },
+
+    goToDetail(id) {
+      this.$router.push({
+        path: '/board/detail/' + id,
+        query: { id: id }
+      });
+    },
+
   }
 }
 </script>
-<style scoped>
 
+<style>
+img {
+    max-width: 90%;
+    height: auto;
+    object-fit: cover;
+}
+video {
+    max-width: 90%;
+    height: auto;
+    object-fit: cover;
+}
+.bottom_menu {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 40px;
+    z-index: 100;
+    border-top: 1px solid black;
+    background-color: white;
+}
+.bottom_menu > div {
+    float: left;
+    width: 20%;
+    height: 100%;
+    text-align: center;
+    padding-top: 0px;
+}
+.bottom_ad {
+    position: fixed;
+    bottom: 30px;
+    left: 0px;
+    width: 100%;
+    height: 50px;
+    z-index: 100;
+    border-top: 1px solid black;
+    background-color: white;
+    margin-bottom: 9px;
+}
 </style>
