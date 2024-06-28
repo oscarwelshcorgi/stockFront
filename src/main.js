@@ -4,13 +4,16 @@ import axios from 'axios'
 import router from './router'
 import store from './vuex/store' // Vuex Store 모듈 import
 import { convertKeysToCamelCase } from './vuex/convertToCamel';
+import { createMetaManager } from 'vue-meta';
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios;  //전역변수로 설정 컴포넌트에서 this.$axios 호출할 수 있음
 app.config.globalProperties.$serverUrl = '//localhost:8080' //api server
 app.use(router);
 app.use(store);
-app.mount('#app')
+app.use(createMetaManager()); // Vue Meta 플러그인 사용
+app.mount('#app');
+
 
 // Axios 응답 인터셉터 설정
 axios.interceptors.response.use(response => {

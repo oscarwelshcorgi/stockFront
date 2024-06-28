@@ -33,6 +33,25 @@
       </div>
     </div>
 
+	<div class="bottom_ad">
+        <!-- 애드핏 -->
+        <ins class="kakao_ad_area" style="display:none;"
+            data-ad-unit = "DAN-rJHzRSsW6ZKje7Ak"
+            data-ad-width = "320"
+            data-ad-height = "50"></ins>
+
+    <!-- 동까net하단광고 -->
+    <!--
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:100%;height:50px"
+             data-ad-client="ca-pub-1107226096880396"
+             data-ad-slot="6012089010"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+     -->
+	</div>
+
     <!-- 하단 메뉴 -->
     <div class="row mt-3">
       <div class="col-md-12">
@@ -75,11 +94,14 @@
 <script>
 import Quill from 'quill'; // Quill 라이브러리 임포트
 import BoardList from './BoardList';
+import { useMeta } from 'vue-meta';
 
 export default {
   components: {
       BoardList
   },
+
+
   data() { //변수생성
     return {
       requestBody: this.$route.query,
@@ -98,6 +120,22 @@ export default {
   },
   mounted() {
     this.fnGetView();
+
+    // 광고 스크립트를 동적으로 로드
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    // 스크립트 로드 후 광고 영역 초기화
+    script.onload = () => {
+      // 광고 영역 초기화
+      window.kakaoAsyncLoad = () => {
+        window.kakaoAd = window.kakaoAd || {};
+        window.kakaoAd.async = true;
+        window.kakaoAd.renderAd(this.$refs.kakaoAd);
+      };
+    };
 
     // Quill 에디터 초기화
     this.quill = new Quill(this.$refs.editor, {
@@ -146,6 +184,8 @@ export default {
         this.nextBoardId = res.data.nextBoardId; // 서버에서 전달된 다음 글의 ID
         // BoardList의 게시글 리스트 데이터 업데이트
         this.boardList = res.data.boardList;
+        // 비동기로 가져온 데이터를 바탕으로 메타 정보 설정
+        this.setDynamicMeta(res.data);
       }).catch((err) => {
         if (err.message.indexOf('Network Error') > -1) {
           alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.')
@@ -244,10 +284,33 @@ export default {
       window.location.reload();
     },
 
-    goToDetail(id) {
-      this.$router.push({
-        path: '/board/detail/' + id,
-        query: { id: id }
+    // meta 태그 셋팅
+    setDynamicMeta(data) {
+      const dynamicMeta = {
+        id: data.id,
+        title: data.title,
+        description: '에펨, 펨코, 팸코, fmkorea, fm, 디시, 디시인사이드, dc, dcinside, 커뮤, 커뮤니티, 오유, 오늘의유머, 웃대, 웃긴대학, 짱공유, 고급유머, 깨글, 개그, gag, 9gag, 레딧, radit  -동까유머',
+        keywords: '동까 유머, 재미있는 각종 유머글 모음 사이트, 유머 사이트 추천, 심심할 때,유머 모음, 재밌는 글, 유머 게시판 -동까유머',
+        ogType: 'website',
+        ogTitle: data.title + ' -동까유머',
+        ogDescription: data.content + ' -동까유머',
+        ogUrl: 'https://dongga.net/board/boardDetail?id=' + data.id,
+        ogImage: data.content,
+      };
+      console.log('Setting dynamic meta with:', dynamicMeta);
+
+      // useMeta를 이용하여 동적으로 title, meta 태그 등을 설정
+      useMeta({
+        title: dynamicMeta.title || process.env.VUE_APP_TITLE,
+        meta: [
+          { vmid: 'description', name: 'description', content: dynamicMeta.description },
+          { vmid: 'keywords', name: 'keywords', content: dynamicMeta.keywords },
+          { vmid: 'og:type', name: 'og:type', content: dynamicMeta.ogType},
+          { vmid: 'og:title', name: 'og:title', content: dynamicMeta.ogTitle },
+          { vmid: 'og:description', name: 'og:description', content: dynamicMeta.ogDescription },
+          { vmid: 'og:url', name: 'og:url', content: dynamicMeta.ogUrl },
+          { vmid: 'og:image', name: 'og:image', content: dynamicMeta.ogImage }
+        ]
       });
     },
 
