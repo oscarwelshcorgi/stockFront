@@ -124,8 +124,6 @@ export default {
         params: this.requestBody,
         headers: {}
       }).then((res) => {
-      console.log(res.data); // 데이터 구조 확인
-
         if (res.data.resultCode === "OK") {
           this.boardList = res.data.data; // boardList에 데이터 할당
           this.paging = res.data.pagination;

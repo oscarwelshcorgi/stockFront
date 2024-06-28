@@ -11,12 +11,6 @@
       </div>
     </div>
 
-    <!-- 이전 글과 다음 글 링크 -->
-    <div v-if="previousBoardId !== null || nextBoardId !== null">
-      <router-link v-if="previousBoardId !== null" :to="'/board/boardDetail?id=' + previousBoardId" @click="onNavigationClick(previousBoardId)">이전 글</router-link>
-      <router-link v-if="nextBoardId !== null" :to="'/board/boardDetail?id=' + nextBoardId" @click="onNavigationClick(nextBoardId)">다음 글</router-link>
-    </div>
-
     <div class="row mt-3">
       <div class="col-md-12">
         <div class="card">
@@ -39,49 +33,38 @@
       </div>
     </div>
 
-    <div>
-      <router-link :to="'/board/detail/' + previousBoardId">이전 글</router-link>
-      <router-link :to="'/board/detail/' + nextBoardId">다음 글</router-link>
-    </div>
-
-    <!--
-    <div>
-      <router-link  :to="'/board/boardDetail?id=' + previousBoardId" @postClicked="onPostClicked">이전 글</router-link>
-      <router-link  :to="'/board/boardDetail?id=' + nextBoardId">다음 글</router-link>
-    </div>
-
-    <router-link v-if="previousBoardId !== null" :to="'/board/detail/' + previousBoardId">이전 글2</router-link>
-    <router-link v-if="nextBoardId !== null" :to="'/board/detail/' + nextBoardId">다음 글2</router-link>
-    -->
-
     <!-- 하단 메뉴 -->
     <div class="row mt-3">
       <div class="col-md-12">
         <div class="bottom_menu d-flex justify-content-between">
           <div>
-            <image href="@/assets/stock_chart.png"/> <!-- back -->
+            <img src="@/assets/back.png" alt="Back" v-on:click="goBack" style="cursor: pointer;"/>
           </div>
 
-          <div v-if="nextBoardId !== null" @click="refreshPage">
-            <router-link :to="'../board/boardDetail?id=' + nextBoardId + '&page=' + page" style="margin-left: 25%;">
-              <image href="@/assets/stock_chart.png"/> <!-- up -->dd
+          <div v-if="nextBoardId !== null">
+            <router-link v-if="nextBoardId !== null" :to="'/board/boardDetail?id=' + nextBoardId + '&page=' + page" @click="onNavigationClick(nextBoardId)">
+              <img src="@/assets/up.png" alt="up"/>
             </router-link>
           </div>
 
-          <div v-if="previousBoardId !== null"  @click="refreshPage">
-            <router-link :to="'../board/boardDetail?id=' + previousBoardId + '&page=' + page" style="margin-left: 40%;" :key="previousBoardId">
-              <image href="@/assets/logo.png" alt="Previous"/><!-- down -->aa
+          <div v-if="previousBoardId !== null">
+            <router-link v-if="previousBoardId !== null" :to="'/board/boardDetail?id=' + previousBoardId + '&page=' + page" @click="onNavigationClick(previousBoardId)">
+              <img src="@/assets/down.png" alt="Previous"/>
+            </router-link>
+          </div>
+
+          <!-- 로그인 시 마이 페이지 이동, 비로그인 시 로그인 페이지로 이동 -->
+          <div>
+            <router-link to="/usr/member/myPage" v-if="hasMemberInfo">
+              <img src="@/assets/face.png"/>
+            </router-link>
+            <router-link to="/usr/member/myPage" v-if="hasMemberInfo !== null">로그인X
+              <img src="@/assets/face.png"/>
             </router-link>
           </div>
 
           <div>
-            <router-link to="/usr/member/myPage">
-              <img src="/img/face.png"/>
-            </router-link>
-          </div>
-
-          <div>
-            <img src="/img/setting.png" />
+            <img src="@/assets/setting.png" style="cursor: pointer;"/>
           </div>
         </div>
       </div>
@@ -161,10 +144,6 @@ export default {
         this.viewCount = res.data.viewCount
         this.previousBoardId = res.data.previousBoardId; // 서버에서 전달된 이전 글의 ID
         this.nextBoardId = res.data.nextBoardId; // 서버에서 전달된 다음 글의 ID
-            console.log('Previous Board ID:', this.previousBoardId);
-            console.log('Next Board ID:', this.nextBoardId);
-            console.log('title:', this.id);
-            console.log('API 응답 데이터:', res.data); // 응답 데이터 확인
         // BoardList의 게시글 리스트 데이터 업데이트
         this.boardList = res.data.boardList;
       }).catch((err) => {
@@ -249,6 +228,7 @@ export default {
             path: '/board/boardDetail?id=' + id,
             query: { id: id }
           });
+          this.increaseViewCount(res.data.id);
           this.refreshPage();
         }).catch((err) => {
           console.error('이전 글 또는 다음 글 조회 중 오류가 발생했습니다.', err);
