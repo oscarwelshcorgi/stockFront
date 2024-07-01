@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <form @submit.prevent="submitPost" class="mt-3">
       <div class="form-group">
-        <input type="text" id="title" v-model="post.title" required class="form-control" style="font-size: 30px; font-weight: bold;" placeholder="제목을 입력해주세요.">
+        <input type="text" id="title" v-model="post.title" required maxlength="100" class="form-control" style="font-size: 30px; font-weight: bold;" placeholder="제목을 입력해주세요.">
       </div>
 
       <!-- content 작성 -->

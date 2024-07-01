@@ -40,7 +40,7 @@
             data-ad-width = "320"
             data-ad-height = "50"></ins>
 
-    <!-- 동까net하단광고 -->
+    <!-- 애드센스 하단광고 -->
     <!--
         <ins class="adsbygoogle"
              style="display:inline-block;width:100%;height:50px"

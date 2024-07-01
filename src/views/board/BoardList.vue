@@ -3,7 +3,7 @@
   <slot name="search">
     <div class="row">
       <div class="col-md-6">
-        <button v-if="hasMemberInfo" type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">등록</button>
+        <button v-if="hasMemberInfo" type="button" class="btn btn-primary mb-3" style="float: left;" @click="fnWrite">글쓰기</button>
       </div>
       <div class="col-md-6">
         <div class="input-group mb-3">
@@ -24,7 +24,7 @@
       <thead>
         <tr>
           <th scope="col">No</th>
-          <th scope="col">제목</th>
+          <th scope="col" style="width: 60%;">제목</th>
           <th scope="col">작성자</th>
           <th scope="col">등록일시</th>
           <th scope="col">조회수</th>
@@ -33,7 +33,9 @@
       <tbody>
         <tr v-for="(row, id) in boardList" :key="id">
           <td>{{ row.id }}</td>
-          <td><a @click="onPostClicked(row)" style="cursor: pointer;">{{ row.title }}</a></td>
+          <td style="width: 60%; max-width: 0;">
+            <a @click="onPostClicked(row)" style="cursor: pointer; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">{{ row.title }}</a>
+          </td>
           <td>{{ row.nickName }}</td>
           <td>{{ row.createDate }}</td>
           <td>{{ row.viewCount }}</td>
