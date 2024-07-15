@@ -122,7 +122,7 @@ export default {
         page: this.page,
         size: this.size
       }
-      this.$axios.get(this.$serverUrl + "/api/board/list", {
+      this.$axios.get(this.$serverUrl + "/api/humorBoard/list", {
         params: this.requestBody,
         headers: {}
       }).then((res) => {
@@ -174,6 +174,11 @@ export default {
       this.$router.push({
         path: './boardDetail',
         query: this.requestBody
+      });
+      // 페이지 맨 위로 스크롤
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
       });
     }
   }

@@ -6,3 +6,5 @@ npm install vue-router
 npm install vuex --save
 npm install quill
 npm install vue-meta@alpha
+npm install sweetalert2 // alert창
+npm install @vueuse/head

@@ -84,7 +84,7 @@ export default {
       this.post.nick_name = this.memberInfo.nickName;
       this.post.email = this.memberInfo.email;
 
-      const apiUrl = `${this.$serverUrl}/api/board/${this.post.id ? 'update' : 'create'}`;
+      const apiUrl = `${this.$serverUrl}/api/humorBoard/${this.post.id ? 'update' : 'create'}`;
       const method = this.post.id ? 'patch' : 'post';
 
       this.$axios[method](apiUrl, this.post)
@@ -108,7 +108,7 @@ export default {
     },
     fnEditPost() {
       if (this.id) {
-        const apiUrl = `${this.$serverUrl}/api/board/detail/${this.id}`;
+        const apiUrl = `${this.$serverUrl}/api/humorBoard/detail/${this.id}`;
 
         this.$axios.get(apiUrl)
           .then(response => {
