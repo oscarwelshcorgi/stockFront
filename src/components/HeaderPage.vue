@@ -9,7 +9,7 @@
 
       <ul class="nav nav-pills">
         <li class="nav-item"><router-link to="/" class="nav-link" aria-current="page">메인</router-link></li>
-        <li class="nav-item"><router-link to="/board/BoardList" class="nav-link">게시판</router-link></li>
+        <li class="nav-item"><router-link to="/board/BoardList" class="nav-link">유머 게시판</router-link></li>
         <li class="nav-item"><a href="#" class="nav-link">공지사항</a></li>
         <li class="nav-item"><a href="#" class="nav-link">고객센터</a></li>
       </ul>
