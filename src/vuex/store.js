@@ -17,7 +17,8 @@ const store = createStore({
     fetchMemberInfo({ commit }) {
       return new Promise((resolve, reject) => {
         // 세션 정보를 가져오는 API 엔드포인트 설정
-        const apiUrl = 'http://localhost:8080/api/memberInfo';
+        //const apiUrl = 'http://localhost:8080//humorBoard/Info'; //개발
+        const apiUrl = 'https://dongga.net:8080/api/memberInfo'; //운영
 
         // Axios를 사용하여 세션 정보 요청
         axios.get(apiUrl, { withCredentials: true }) // withCredentials 옵션을 통해 쿠키를 전달

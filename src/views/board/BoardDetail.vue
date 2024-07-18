@@ -268,7 +268,8 @@ export default {
           reverseButtons: true
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+            //window.location.href = 'https://localhost:8080/oauth2/authorization/google'; //개발
+            window.location.href = 'https://dongga.net:8080/oauth2/authorization/google'; //운영
           }
         });
       }

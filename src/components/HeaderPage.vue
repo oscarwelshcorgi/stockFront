@@ -50,10 +50,12 @@ export default {
   },
   methods: {
     redirectToGoogleAuth() {
-      window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+      //window.location.href = 'https://localhost:8080/oauth2/authorization/google'; //개발
+      window.location.href = 'https://dongga.net:8080/oauth2/authorization/google'; //운영
     },
     redirectToGoogleLogout() {
-      window.location.href = 'http://localhost:8080/logout';
+      //window.location.href = 'https://localhost:8080/logout'; //개발
+      window.location.href = 'https://dongga.net:8080/logout'; //운영
     },
   },
   computed: {
