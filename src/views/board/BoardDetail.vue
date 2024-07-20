@@ -20,6 +20,14 @@
             <div class="fs-5"><strong>작성자: {{ nickName }}, 작성일: {{ createDate }}, 조회수: {{ viewCount }}</strong></div>
           </div>
           <div class="card-body">
+            <!-- 내용상단광고 start-->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1107226096880396"
+                 data-ad-slot="6457501361"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <!-- 내용상단광고 end-->
             <div ref="editor" class="quill-viewer" v-html="content"></div>
           </div>
         </div>
@@ -35,11 +43,12 @@
     </div>
 
     <div class="bottom_ad">
-      <!-- 애드핏 -->
+      <!-- 애드핏 하단 고정 광고 start -->
       <ins class="kakao_ad_area" style="display:none;"
           data-ad-unit="DAN-rJHzRSsW6ZKje7Ak"
           data-ad-width="320"
           data-ad-height="50"></ins>
+      <!-- 애드핏 하단 고정 광고 end -->
     </div>
 
     <!-- 하단 메뉴 -->
@@ -322,12 +331,12 @@ export default {
 
 <style scoped>
 img {
-  max-width: 90%;
+  max-width: 100%;
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
 }
 video {
-  max-width: 90%;
+  max-width: 100%;
   height: auto;
   object-fit: cover;
 }
