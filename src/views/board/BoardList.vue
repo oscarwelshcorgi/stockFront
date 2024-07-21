@@ -94,7 +94,7 @@ export default {
         totalPageCnt: 0,
       }, //페이징 데이터
       page: this.$route.query.page ? parseInt(this.$route.query.page) : 1,
-      size: this.$route.query.size ? parseInt(this.$route.query.size) : 5,
+      size: this.$route.query.size ? parseInt(this.$route.query.size) : 10,
       searchKey: this.$route.query.sk ? this.$route.query.sk : '',
       searchValue: this.$route.query.sv ? this.$route.query.sv : '',
     };
