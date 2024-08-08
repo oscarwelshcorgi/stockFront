@@ -17,38 +17,60 @@
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <div class="fw-bold fs-4">{{ title }}</div>
-            <div class="fs-5"><strong>작성자: {{ nickName }}, 작성일: {{ createDate }}, 조회수: {{ viewCount }}</strong></div>
           </div>
           <div class="card-body">
-            <!-- 내용상단광고 start-->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-1107226096880396"
-                 data-ad-slot="6457501361"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <!-- 내용상단광고 end-->
+            <div class="fs-5" style="text-align: right;">
+                <strong>작성자: {{ nickName }}, 작성일: {{ createDate }}, 조회수: {{ viewCount }}</strong>
+            </div>
+            <div>
+              <!-- 애드센스 컨텐츠 상단 광고 -->
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-1107226096880396"
+                   data-ad-slot="6457501361"
+                   data-ad-format="auto"
+                   data-full-width-responsive="true"></ins>
+            </div>
             <div ref="editor" class="quill-viewer" v-html="content"></div>
+
           </div>
         </div>
 
         <div>
-          <BoardList :list="boardList" :paging="paging" @postClicked="onPostClicked">
+          <BoardList :list="boardList" :paging="paging" @onPostClicked="onPostClicked">
             <template v-slot:search>
               <h1>-----------------------------------------------</h1>
             </template>
           </BoardList>
+          <!-- 리스트 하단 멀티플렉스 애드센스 광고 -->
+          <div>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="autorelaxed"
+                 data-ad-client="ca-pub-1107226096880396"
+                 data-ad-slot="8546883167"></ins>
+          </div>
+
         </div>
       </div>
     </div>
 
     <div class="bottom_ad">
-      <!-- 애드핏 하단 고정 광고 start -->
-      <ins class="kakao_ad_area" style="display:none;"
+      <!-- 애드센스 하단 메뉴 광고 -->
+        <!-- 수평형 지정 -->
+        <!--
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1107226096880396"
+             data-ad-slot="6012089010"
+             data-ad-format="horizontal"
+             data-full-width-responsive="true"></ins>
+        -->
+
+      <!-- 애드핏 -->
+      <ins class="kakao_ad_area" style="display:block; width: 100%; height: 50px;"
           data-ad-unit="DAN-rJHzRSsW6ZKje7Ak"
-          data-ad-width="320"
           data-ad-height="50"></ins>
-      <!-- 애드핏 하단 고정 광고 end -->
     </div>
 
     <!-- 하단 메뉴 -->
@@ -72,10 +94,10 @@
           </div>
 
           <div>
-            <router-link v-if="hasMemberInfo" to="/usr/member/myPage">
+            <router-link v-if="hasMemberInfo" to="/">
               <img src="@/assets/face.png"/>
             </router-link>
-            <router-link v-else to="/usr/member/myPage">
+            <router-link v-else to="/">
               로그인X <img src="@/assets/face.png"/>
             </router-link>
           </div>
@@ -114,10 +136,23 @@ export default {
       previousBoardId: '',
       nextBoardId: '',
       page: 1,
+      paging: null,
     }
   },
 
   mounted() {
+    // 광고 스크립트 로드 및 광고 초기화
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1107226096880396';
+    script.crossOrigin = 'anonymous';
+    document.head.appendChild(script);
+
+    // 광고 초기화 스크립트
+    script.onload = () => {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    };
+
     this.fnGetView();
     this.loadAdsScript();
 
@@ -331,12 +366,12 @@ export default {
 
 <style scoped>
 img {
-  max-width: 100%;
+  max-width: 90%;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
 }
 video {
-  max-width: 100%;
+  max-width: 90%;
   height: auto;
   object-fit: cover;
 }
