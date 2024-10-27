@@ -16,7 +16,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="fw-bold fs-4">{{ title }}</div>
+            <div class="fw-bold fs-4" id="title">{{ title }}</div>
           </div>
           <div class="card-body">
             <div class="fs-5" style="text-align: right;">
@@ -31,7 +31,26 @@
                    data-ad-format="auto"
                    data-full-width-responsive="true"></ins>
             </div>
-            <div ref="editor" class="quill-viewer" v-html="content"></div>
+            <div ref="editor" class="quill-viewer" id="content" v-html="content"></div>
+            <div>
+              <!-- 애드센스 컨텐츠 상단 광고 -->
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-1107226096880396"
+                   data-ad-slot="8736954420"
+                   data-ad-format="auto"
+                   data-full-width-responsive="true"></ins>
+            </div>
+
+            <!-- 댓글 -->
+            <div>
+              <div v-for="comment in comments" :key="comment.id">
+                <p><strong>{{ comment.NickName || 'Unknown' }}</strong></p>
+                <p>{{ comment.commentContent }}</p>
+              </div>
+              <textarea v-model="newComment.commentContent" placeholder="댓글을 입력하세요..."></textarea>
+              <button @click="addComment">댓글 추가</button>
+            </div>
 
           </div>
         </div>
@@ -42,15 +61,6 @@
               <h1>-----------------------------------------------</h1>
             </template>
           </BoardList>
-          <!-- 리스트 하단 멀티플렉스 애드센스 광고 -->
-          <div>
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="autorelaxed"
-                 data-ad-client="ca-pub-1107226096880396"
-                 data-ad-slot="8546883167"></ins>
-          </div>
-
         </div>
       </div>
     </div>
@@ -68,8 +78,9 @@
         -->
 
       <!-- 애드핏 -->
-      <ins class="kakao_ad_area" style="display:block; width: 100%; height: 50px;"
+      <ins class="kakao_ad_area" style="display:none;"
           data-ad-unit="DAN-rJHzRSsW6ZKje7Ak"
+          data-ad-width="320"
           data-ad-height="50"></ins>
     </div>
 
@@ -137,6 +148,10 @@ export default {
       nextBoardId: '',
       page: 1,
       paging: null,
+      comments: [],
+      newComment: {
+        content: ''
+      }
     }
   },
 
@@ -202,7 +217,10 @@ export default {
         this.previousBoardId = res.data.previousBoardId;
         this.nextBoardId = res.data.nextBoardId;
         this.boardList = res.data.boardList;
+        this.comments = res.data.comments; // 댓글 목록 초기화
         this.setDynamicMeta(res.data);
+
+        document.title = this.title + ' - 바이너리스톡';
       }).catch((err) => {
         if (err.message.indexOf('Network Error') > -1) {
           alert('네트워크가 원활하지 않습니다.\n잠시 후 다시 시도해주세요.');
@@ -284,6 +302,43 @@ export default {
         });
     },
 
+    // 댓글
+    addComment() {
+      if (!this.hasMemberInfo) {
+        Swal.fire({
+          title: '댓글을 추가하기 위해 로그인해주세요.',
+          text: '로그인 페이지로 이동하시겠습니까?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '로그인',
+          cancelButtonText: '취소'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+          }
+        });
+        return;
+      }
+
+      const comment = {
+        content: this.newComment.content,
+        authorEmail: this.memberInfo.email // 현재 로그인된 사용자의 이메일
+      };
+
+      this.$axios.post(this.$serverUrl + '/api/comments', comment, {
+        headers: {
+          'Authorization': `Bearer ${this.$store.getters.getAuthToken}` // 인증 토큰이 있는 경우
+        }
+      }).then((res) => {
+        this.comments.push(res.data);
+        this.newComment.content = ''; // 댓글 입력란 비우기
+      }).catch((err) => {
+        console.error('댓글 추가 중 오류가 발생했습니다.', err);
+      });
+    },
+
     goBack() {
       this.$router.go(-1);
     },
@@ -312,8 +367,7 @@ export default {
           reverseButtons: true
         }).then((result) => {
           if (result.isConfirmed) {
-            //window.location.href = 'https://localhost:8080/oauth2/authorization/google'; //개발
-            window.location.href = 'https://dongga.net:8080/oauth2/authorization/google'; //운영
+            window.location.href = 'http://localhost:8080/oauth2/authorization/google';
           }
         });
       }
@@ -323,11 +377,11 @@ export default {
       const dynamicMeta = {
         id: data.id,
         title: data.title,
-        description: '에펨, 펨코, 팸코, fmkorea, fm, 디시, 디시인사이드, dc, dcinside, 커뮤, 커뮤니티, 오유, 오늘의유머, 웃대, 웃긴대학, 짱공유, 고급유머, 깨글, 개그, gag, 9gag, 레딧, radit  -동까유머',
-        keywords: '동까 유머, 동까우머, 동가유머, 동까유머, 동까 우머, 재미있는 각종 유머글 모음 사이트, 유머 사이트 추천, 심심할 때,유머 모음, 재밌는 글, 유머 게시판, 아프라카, 인터넷 방송, 뉴스, bj, 축구, 스타, 게임, 예능, 티비, tv, 야구, mlb, 음식, 먹방 -동까유머',
+        description: '에펨, 펨코, 팸코, fmkorea, fm, 디시, 디시인사이드, dc, dcinside, 커뮤, 커뮤니티, 오유, 오늘의유머, 웃대, 웃긴대학, 짱공유, 고급유머, 깨글, 개그, gag, 9gag, 레딧, radit  -바이너리스톡',
+        keywords: '바이너리 스톡, 바이너리스톡, 재미있는 각종 유머글 모음 사이트, 유머 사이트 추천, 심심할 때,유머 모음, 재밌는 글, 유머 게시판, 아프라카, 인터넷 방송, 뉴스, bj, 축구, 스타, 게임, 예능, 티비, tv, 야구, mlb, 음식, 먹방 -바이너리스톡',
         ogType: 'website',
-        ogTitle: data.title + ' -동까유머',
-        ogDescription: data.content + ' -동까유머',
+        ogTitle: data.title + ' -바이너리스톡',
+        ogDescription: data.content + ' -바이너리스톡',
         ogUrl: 'https://dongga.net/board/boardDetail?id=' + data.id,
         ogImage: data.content,
       };

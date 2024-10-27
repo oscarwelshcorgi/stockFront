@@ -175,12 +175,27 @@ export default {
         path: './boardDetail',
         query: this.requestBody
       });
-      // 페이지 맨 위로 스크롤
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth' // 부드럽게 스크롤
-      });
-    }
+      // 0.9초 후에 페이지를 새로고침
+      this.refreshPage();
+      this.increaseViewCount(row.id);
+      window.scrollTo(0, 0);
+    },
+
+    refreshPage() {
+      setTimeout(() => {
+        window.location.reload();
+      }, 900); // 500ms = 0.5초
+    },
+
+    increaseViewCount(id) {
+      this.$axios.put(this.$serverUrl + '/api/humorBoard/increaseViewCount/' + id)
+        .then(() => {
+          console.log('조회수가 증가되었습니다.');
+        }).catch((err) => {
+          console.error('조회수 증가 중 오류가 발생했습니다.', err);
+        });
+    },
+
   }
 }
 </script>

@@ -9,7 +9,7 @@
 
       <ul class="nav nav-pills">
         <li class="nav-item"><router-link to="/" class="nav-link" aria-current="page">메인</router-link></li>
-        <li class="nav-item"><router-link to="/board/BoardList" class="nav-link">유머 게시판</router-link></li>
+        <li class="nav-item"><router-link to="/board/BoardList" class="nav-link">게시판</router-link></li>
         <li class="nav-item"><a href="#" class="nav-link">공지사항</a></li>
         <li class="nav-item"><a href="#" class="nav-link">고객센터</a></li>
       </ul>
@@ -50,12 +50,10 @@ export default {
   },
   methods: {
     redirectToGoogleAuth() {
-      //window.location.href = 'https://localhost:8080/oauth2/authorization/google'; //개발
-      window.location.href = 'https://dongga.net:8080/oauth2/authorization/google'; //운영
+      window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     },
     redirectToGoogleLogout() {
-      //window.location.href = 'https://localhost:8080/logout'; //개발
-      window.location.href = 'https://dongga.net:8080/logout'; //운영
+      window.location.href = 'http://localhost:8080/logout';
     },
   },
   computed: {

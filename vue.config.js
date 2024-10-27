@@ -9,8 +9,7 @@ module.exports = defineConfig({
       // 프록시 설정
         proxy: {
         '/api': {
-        //target: 'https://localhost:8080', //개발
-        target: 'https://dongga.net:8080', //운영
+        target: 'https://localhost:8080', //개발
         changeOrigin: true,
         pathRewrite: { '^/api': '' }
       }

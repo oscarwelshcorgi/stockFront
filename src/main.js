@@ -8,8 +8,7 @@ import { createMetaManager } from 'vue-meta';
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios;  //전역변수로 설정 컴포넌트에서 this.$axios 호출할 수 있음
-//app.config.globalProperties.$serverUrl = '//localhost:8080' //api dev server
-app.config.globalProperties.$serverUrl = 'https://dongga.net:8080' //api server
+app.config.globalProperties.$serverUrl = '//localhost:8080' //api server
 app.use(router);
 app.use(store);
 app.use(createMetaManager()); // Vue Meta 플러그인 사용
